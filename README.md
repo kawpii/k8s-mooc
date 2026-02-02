@@ -39,6 +39,8 @@
 - [3.7](https://github.com/kawpiya/k8s-mooc/tree/3.7)
 - [3.8](https://github.com/kawpiya/k8s-mooc/tree/3.8)
 - [3.9](https://github.com/kawpiya/k8s-mooc/tree/3.9)
+- [3.10](https://github.com/kawpiya/k8s-mooc/tree/3.10)
+    Uses workload identity
 
 #### Postgres with PVs
 ##### Pros

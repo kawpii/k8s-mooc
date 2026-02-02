@@ -11,6 +11,8 @@ resources:
   - manifests/todos/pg-configmap.yaml
   - manifests/todos/postgres-sset.yaml
   - manifests/todos/postgres-service.yaml
+  - manifests/todos/pg-dump-cronjob.yaml
+  - manifests/todos/project-sa.yaml
   - manifests/todos/cron-job.yaml
   - manifests/todos/gateway.yaml
   - manifests/todos/route.yaml

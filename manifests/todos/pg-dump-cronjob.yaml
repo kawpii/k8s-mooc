@@ -1,0 +1,41 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: postgres-backup-hourly
+  namespace: project
+spec:
+  schedule: "0 * * * *" # Every hour
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: postgres-backup-sa
+          containers:
+          - name: backup-worker
+            image: google/cloud-sdk:alpine
+            command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+              # Install the v17 client specifically to match your DB
+              apk add --no-cache postgresql17-client --repository=http://dl-cdn.alpinelinux.org/alpine/edge/main
+              
+              TIMESTAMP=$(date +%Y%m%d-%H%M)
+              export PGPASSWORD=$POSTGRES_PASSWORD
+              
+              echo "Starting dump of $POSTGRES_DB..."
+              pg_dump -h postgres-svc -U $POSTGRES_USER $POSTGRES_DB | \
+              gzip | \
+              gsutil cp - gs://pg-backups-dwk-gke-485610/backup-$TIMESTAMP.sql.gz
+              
+              echo "Backup complete: backup-$TIMESTAMP.sql.gz"
+            env:
+            - name: POSTGRES_DB
+              value: "todos"
+            - name: POSTGRES_USER
+              value: "john"
+            - name: POSTGRES_PASSWORD
+              value: "abc123"
+          restartPolicy: OnFailure

@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: postgres-backup-sa
+  namespace: project
+  annotations:
+    # This links the KSA to your existing Google Service Account
+    iam.gke.io/gcp-service-account: gke-service@dwk-gke-485610.iam.gserviceaccount.com
