@@ -4,9 +4,9 @@ metadata:
   namespace: project
   name: images-claim
 spec:
-  storageClassName: standard-rwo
+  storageClassName: standard-rwx
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   resources:
     requests:
       storage: 1Gi

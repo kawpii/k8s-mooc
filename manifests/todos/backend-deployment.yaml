@@ -30,6 +30,13 @@ spec:
         - name: todo-backend-app
           image: PROJECT/BACKEND_IMAGE
           imagePullPolicy: Always
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "100m"
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
           env:
             - name: DATABASE_URL
               valueFrom:

@@ -23,6 +23,13 @@ spec:
         - name: todo-frontend-app
           image: PROJECT/FRONTEND_IMAGE
           imagePullPolicy: Always
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "100m"
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
           env:
           - name: PORT
             valueFrom:
