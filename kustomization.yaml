@@ -22,6 +22,6 @@ resources:
   - manifests/todos/pdb-backend.yaml
 images:
   - name: PROJECT/BACKEND_IMAGE
-    newName: europe-north1-docker.pkg.dev/dwk-gke-485610/my-repo/todo-backend-app:2.11
+    newName: europe-north1-docker.pkg.dev/dwk-gke-485610/my-repo/todo-backend:4.2
   - name: PROJECT/FRONTEND_IMAGE
-    newName: europe-north1-docker.pkg.dev/dwk-gke-485610/my-repo/todo-frontend-app:2.10
+    newName: europe-north1-docker.pkg.dev/dwk-gke-485610/my-repo/todo-frontend:4.2

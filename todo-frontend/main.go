@@ -188,6 +188,11 @@ func main() {
 	http.HandleFunc("/image", imageHandler)
 	// http.HandleFunc("/submit", submitHandler)
 
+	http.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("OK"))
+	})
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"

@@ -30,6 +30,18 @@ spec:
         - name: todo-backend-app
           image: PROJECT/BACKEND_IMAGE
           imagePullPolicy: Always
+          readinessProbe:
+            initialDelaySeconds: 10 # Initial delay until the readiness is tested
+            periodSeconds: 5 # How often to test
+            httpGet:
+               path: /healthz
+               port: 9090
+          livenessProbe:
+            initialDelaySeconds: 20 # Initial delay until the liveness is tested
+            periodSeconds: 5 # How often to test
+            httpGet:
+               path: /healthz
+               port: 9090
           resources:
             limits:
               memory: "128Mi"
