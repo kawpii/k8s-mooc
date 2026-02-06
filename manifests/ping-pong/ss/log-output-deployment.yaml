@@ -22,11 +22,11 @@ spec:
           image: europe-north1-docker.pkg.dev/dwk-gke-485610/my-repo/log-output-app:2.7
           imagePullPolicy: Always
           readinessProbe:
-            httpGet:
-              path: /
-              port: 9090    # Note: Use the container port, usually matches targetPort
             initialDelaySeconds: 10
             periodSeconds: 5
+            httpGet:
+              path: /
+              port: 9090
           volumeMounts:
             - name: config-volume
               mountPath: /config

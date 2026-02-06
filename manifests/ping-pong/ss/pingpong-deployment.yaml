@@ -33,11 +33,11 @@ spec:
           image: europe-north1-docker.pkg.dev/dwk-gke-485610/my-repo/ping-pong-app:3.4
           imagePullPolicy: Always
           readinessProbe:
-            httpGet:
-              path: /
-              port: 9090    # Note: Use the container port, usually matches targetPort
             initialDelaySeconds: 10
             periodSeconds: 5
+            httpGet:
+              path: /
+              port: 9090
           env:
             - name: DATABASE_URL
               valueFrom:
