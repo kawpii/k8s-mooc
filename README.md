@@ -70,5 +70,6 @@ There is bit of middle ground to reduce ops burden by using a Postgres operator 
 
 ### Chapter 5
 
+- [4.1](https://github.com/kawpiya/k8s-mooc/tree/4.1)
 
 ### Chapter 6
