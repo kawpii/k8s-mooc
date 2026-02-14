@@ -15,7 +15,10 @@ spec:
       labels:
         app: todo-frontend-app
       annotations:
-        gke-gcsview.csi.storage.gke.io/enable-mount: "true" # Required for GCS FUSE
+        gke-gcsfuse/volumes: "true" # Required for GCS FUSE
+        gke-gcsfuse/cpu-request: "10m"
+        gke-gcsfuse/memory-request: "64Mi"
+        gke-gcsfuse/ephemeral-storage-request: "50Mi"
     spec:
       serviceAccountName: postgres-backup-sa # Use a SA that has GCS permissions
       volumes:
@@ -24,7 +27,7 @@ spec:
             claimName: images-claim
       containers:
         - name: todo-frontend-app
-          image: PROJECT/FRONTEND_IMAGE
+          image: frontend-image
           imagePullPolicy: Always
           readinessProbe:
             initialDelaySeconds: 10 # Initial delay until the readiness is tested
