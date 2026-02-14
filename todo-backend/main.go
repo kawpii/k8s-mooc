@@ -6,9 +6,17 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
+	"strings"
 
 	_ "github.com/lib/pq"
 )
+
+type Todo struct {
+	ID    int    `json:"id"`
+	Title string `json:"title"`
+	Done  bool   `json:"done"`
+}
 
 var db *sql.DB
 
@@ -20,7 +28,7 @@ func getTodosHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 
-	rows, err := db.Query("SELECT title FROM todos")
+	rows, err := db.Query("SELECT id, title, done FROM todos")
 
 	if err != nil {
 		log.Printf("Query error: %v", err)
@@ -29,23 +37,21 @@ func getTodosHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer rows.Close()
 
-	var todos []string
+	var todos []Todo
 
 	// 2. Iterate through the rows
 	for rows.Next() {
-		var title string
+		var t Todo
 		// 3. Scan into a string variable, not the slice
-		if err := rows.Scan(&title); err != nil {
+		if err := rows.Scan(&t.ID, &t.Title, &t.Done); err != nil {
 			log.Printf("Scan error: %v", err)
 			continue
 		}
-		todos = append(todos, title)
+		todos = append(todos, t)
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	// Handle empty case to return [] instead of null
 	if todos == nil {
-		todos = []string{}
+		todos = []Todo{}
 	}
 	json.NewEncoder(w).Encode(todos)
 }
@@ -69,6 +75,54 @@ func createTodoHandler(w http.ResponseWriter, r *http.Request) {
 
 	log.Printf("Created todo: %s\n", text)
 	// Redirect back to page (prevents duplicate submit on refresh)
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
+// UPDATED PUT handler to use /todos/<id>
+func updateTodoHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodOptions {
+		return
+	}
+	if r.Method != http.MethodPut {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// NEW: extract id from URL path
+	// Expected format: /todos/123
+	parts := strings.Split(r.URL.Path, "/")
+	if len(parts) != 3 || parts[2] == "" {
+		http.Error(w, "Invalid URL", http.StatusBadRequest)
+		return
+	}
+
+	idStr := parts[2]
+
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "Invalid id", http.StatusBadRequest)
+		return
+	}
+
+	// NEW: read JSON body instead of query param
+	var payload struct {
+		Done bool `json:"done"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
+		http.Error(w, "Invalid body", http.StatusBadRequest)
+		return
+	}
+
+	_, err = db.Exec("UPDATE todos SET done=$1 WHERE id=$2", payload.Done, id)
+	if err != nil {
+		log.Printf("Update error: %v", err)
+		http.Error(w, "Database error", http.StatusInternalServerError)
+		return
+	}
+
+	log.Printf("Updated todo with ID: %s\n", idStr)
+
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
@@ -107,6 +161,8 @@ func main() {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		}
 	})
+
+	http.HandleFunc("/todos/", updateTodoHandler)
 
 	port := os.Getenv("PORT")
 	if port == "" {

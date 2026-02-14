@@ -24,6 +24,17 @@ var (
 	mu         sync.RWMutex
 )
 
+type Todo struct {
+	ID    int    `json:"id"`
+	Title string `json:"title"`
+	Done  bool   `json:"done"`
+}
+
+type PageData struct {
+	Pending   []Todo
+	Completed []Todo
+}
+
 // download and replace cache
 func refreshImage() {
 	resp, err := http.Get(imageURL)
@@ -92,13 +103,27 @@ func pageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer resp.Body.Close()
 
-	var todos []string
+	var todos []Todo
 	if err := json.NewDecoder(resp.Body).Decode(&todos); err != nil {
 		http.Error(w, "Invalid response", http.StatusInternalServerError)
 		return
 	}
 
-	w.Header().Set("Content-Type", "text/html")
+	var pending []Todo
+	var completed []Todo
+	for _, t := range todos {
+		if t.Done {
+			completed = append(completed, t)
+		} else {
+			pending = append(pending, t)
+		}
+	}
+
+	data := PageData{
+		Pending:   pending,
+		Completed: completed,
+	}
+
 	var pageTmpl = template.Must(template.New("page").Parse(`
 <!DOCTYPE html>
 <html>
@@ -143,22 +168,45 @@ func pageHandler(w http.ResponseWriter, r *http.Request) {
 	<button type="submit">Submit</button>
 </form>
 
-<h2>Todo List</h2>
+<h2>Uncompleted Todos</h2>
 
 <ul>
-{{range .}}
-	<li>{{.}}</li>
+{{range .Pending}}
+	<li>
+		{{.Title}} <button onclick="markDone({{.ID}})">Done</button>
+	</li>
 {{else}}
-	<li>No todos found</li>
+	<li>No pending todos</li>
 {{end}}
 </ul>
+
+<h2>Completed Todos</h2> 
+
+<ul>
+{{range .Completed}} 
+	<li>{{.Title}}</li> 
+{{else}}
+	<li>No completed todos</li> 
+{{end}}
+</ul>
+
+<script>
+function markDone(id) {
+	fetch('/todos/' + id, {
+		method: 'PUT',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ done: true })
+	})
+	.then(() => location.reload());
+}
+</script>
 
 </body>
 </html>
 `))
 
 	w.Header().Set("Content-Type", "text/html")
-	if err := pageTmpl.Execute(w, todos); err != nil {
+	if err := pageTmpl.Execute(w, data); err != nil {
 		http.Error(w, "Template error", 500)
 	}
 }
