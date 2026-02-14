@@ -72,5 +72,10 @@ There is bit of middle ground to reduce ops burden by using a Postgres operator 
 
 - [4.1](https://github.com/kawpiya/k8s-mooc/tree/4.1)
 - [4.2](https://github.com/kawpiya/k8s-mooc/tree/4.2)
+- [4.3](https://github.com/kawpiya/k8s-mooc/tree/4.3)
+
+```
+sum(kube_pod_info{created_by_kind="StatefulSet", namespace="prometheus"})
+```
 
 ### Chapter 6
