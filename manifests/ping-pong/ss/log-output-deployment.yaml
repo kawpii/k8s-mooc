@@ -1,5 +1,5 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
 metadata:
   namespace: exercises
   name: log-output-dep
@@ -8,6 +8,13 @@ spec:
   selector:
     matchLabels:
       app: log-output-app
+  strategy:
+    canary:
+      steps:
+      - setWeight: 50
+      - analysis:
+          templates:
+          - templateName: cpu-usage
   template:
     metadata:
       labels:
@@ -22,11 +29,17 @@ spec:
           image: europe-north1-docker.pkg.dev/dwk-gke-485610/my-repo/log-output-app:2.7
           imagePullPolicy: Always
           readinessProbe:
-            initialDelaySeconds: 10
+            initialDelaySeconds: 20
             periodSeconds: 5
             httpGet:
               path: /
               port: 9090
+          livenessProbe:
+            initialDelaySeconds: 20
+            periodSeconds: 5 # How often to test
+            httpGet:
+               path: /
+               port: 9090
           volumeMounts:
             - name: config-volume
               mountPath: /config

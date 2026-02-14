@@ -1,0 +1,15 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: cpu-usage
+  namespace: exercises
+spec:
+  metrics:
+  - name: cpu-usage
+    initialDelay: 2m
+    successCondition: result > 50
+    provider:
+      prometheus:
+        address: http://kube-prometheus-stack-1771-prometheus.prometheus.svc.cluster.local:9090
+        query: |
+          (sum(rate(container_cpu_usage_seconds_total{namespace="exercises"}[5m]))/ sum(machine_cpu_cores))* 100
