@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	_ "github.com/lib/pq"
+	"github.com/nats-io/nats.go"
 )
 
 type Todo struct {
@@ -18,6 +19,7 @@ type Todo struct {
 	Done  bool   `json:"done"`
 }
 
+var nc *nats.Conn
 var db *sql.DB
 
 func getTodosHandler(w http.ResponseWriter, r *http.Request) {
@@ -73,12 +75,41 @@ func createTodoHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var todo Todo
+	err = db.QueryRow(
+		"INSERT INTO todos(title) VALUES ($1) RETURNING id, title, done",
+		text,
+	).Scan(&todo.ID, &todo.Title, &todo.Done)
+	if err != nil {
+		log.Printf("Update error: %v", err)
+		http.Error(w, "Database error", http.StatusInternalServerError)
+		return
+	}
+
+	// Wrap Todo with extra operation field
+	message := map[string]interface{}{
+		"operation": "create",
+		"todo":      todo,
+	}
+
+	// Convert to JSON
+	msg, err := json.Marshal(message)
+	if err != nil {
+		log.Printf("JSON marshal error: %v", err)
+		http.Error(w, "Server error", http.StatusInternalServerError)
+		return
+	}
+
+	// Publish to NATS use default at most once delivery
+	if err := nc.Publish("todos", msg); err != nil {
+		log.Printf("NATS publish error: %v", err)
+	}
+
 	log.Printf("Created todo: %s\n", text)
 	// Redirect back to page (prevents duplicate submit on refresh)
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
-// UPDATED PUT handler to use /todos/<id>
 func updateTodoHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodOptions {
 		return
@@ -88,7 +119,7 @@ func updateTodoHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// NEW: extract id from URL path
+	// Extract id from URL path
 	// Expected format: /todos/123
 	parts := strings.Split(r.URL.Path, "/")
 	if len(parts) != 3 || parts[2] == "" {
@@ -104,7 +135,6 @@ func updateTodoHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// NEW: read JSON body instead of query param
 	var payload struct {
 		Done bool `json:"done"`
 	}
@@ -114,11 +144,31 @@ func updateTodoHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = db.Exec("UPDATE todos SET done=$1 WHERE id=$2", payload.Done, id)
+	var todo Todo
+	err = db.QueryRow(
+		"UPDATE todos SET done=$1 WHERE id=$2 RETURNING id, title, done",
+		payload.Done, id,
+	).Scan(&todo.ID, &todo.Title, &todo.Done)
 	if err != nil {
 		log.Printf("Update error: %v", err)
 		http.Error(w, "Database error", http.StatusInternalServerError)
 		return
+	}
+
+	message := map[string]interface{}{
+		"operation": "update",
+		"todo":      todo,
+	}
+
+	msg, err := json.Marshal(message)
+	if err != nil {
+		log.Printf("JSON marshal error: %v", err)
+		http.Error(w, "Server error", http.StatusInternalServerError)
+		return
+	}
+
+	if err := nc.Publish("todos", msg); err != nil {
+		log.Printf("NATS publish error: %v", err)
 	}
 
 	log.Printf("Updated todo with ID: %s\n", idStr)
@@ -127,8 +177,19 @@ func updateTodoHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-
 	var err error
+
+	// Connect to NATS server
+	natsUrl := os.Getenv("NATS_URL")
+	if natsUrl == "" {
+		natsUrl = nats.DefaultURL
+	}
+	nc, err := nats.Connect(natsUrl)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer nc.Close()
+
 	// 1. Initialize the DB connection
 	connStr := os.Getenv("DATABASE_URL")
 	db, err = sql.Open("postgres", connStr)

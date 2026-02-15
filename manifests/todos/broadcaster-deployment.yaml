@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: project
+  name: broadcaster-app-dep
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: todo-broadcaster-app
+  template:
+    metadata:
+      labels:
+        app: todo-broadcaster-app
+    spec:
+      containers:
+        - name: todo-broadcaster-app
+          image: broadcaster-image
+          imagePullPolicy: Always
+          readinessProbe:
+            initialDelaySeconds: 10 # Initial delay until the readiness is tested
+            periodSeconds: 5 # How often to test
+            httpGet:
+               path: /healthz
+               port: 8080
+          livenessProbe:
+            initialDelaySeconds: 20 # Initial delay until the liveness is tested
+            periodSeconds: 5 # How often to test
+            httpGet:
+               path: /healthz
+               port: 8080
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "100m"
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
+          env:
+          - name: PORT
+            valueFrom:
+              configMapKeyRef:
+                name: todo-configmap
+                key: FRONTEND_PORT
+          - name: NATS_URL
+            valueFrom:
+              configMapKeyRef:
+                name: todo-configmap
+                key: NATS_URL
