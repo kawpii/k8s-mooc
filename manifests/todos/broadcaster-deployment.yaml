@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: todo-broadcaster-app
-          image: broadcaster-image
+          image: broadcast-image
           imagePullPolicy: Always
           readinessProbe:
             initialDelaySeconds: 10 # Initial delay until the readiness is tested
