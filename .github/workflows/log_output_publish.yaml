@@ -20,14 +20,14 @@ jobs:
 
       - name: Build and publish backend
         run: |-
-          docker build --tag "kawpii/k8s-mooc:$GITHUB_SHA" ./log-output
-          docker push "kawpii/k8s-mooc:$GITHUB_SHA"
+          docker build --tag "kawpii/logoutput:$GITHUB_SHA" ./log-output
+          docker push "kawpii/logoutput:$GITHUB_SHA"
 
       - name: Set up Kustomize
         uses: imranismail/setup-kustomize@v2
 
       - name: Use right image
-        run: cd log-output && kustomize edit set image PROJECT/IMAGE=k8s-mooc:$GITHUB_SHA
+        run: cd log-output && kustomize edit set image PROJECT/IMAGE=logoutput-image:$GITHUB_SHA
 
       - name: commit kustomization.yaml to GitHub
         uses: EndBug/add-and-commit@v9
