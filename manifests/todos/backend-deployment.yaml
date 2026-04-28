@@ -31,10 +31,12 @@ spec:
           image: backend-image
           imagePullPolicy: Always
           readinessProbe:
-            initialDelaySeconds: 10 # Initial delay until the readiness is tested
+            initialDelaySeconds: 3 # Initial delay until the readiness is tested
             periodSeconds: 5 # How often to test
+            timeoutSeconds: 2
+            failureThreshold: 2
             httpGet:
-               path: /healthz
+               path: /ready
                port: 9090
           livenessProbe:
             initialDelaySeconds: 20 # Initial delay until the liveness is tested

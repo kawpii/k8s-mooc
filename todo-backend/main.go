@@ -203,10 +203,18 @@ func main() {
 	}
 
 	http.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
-
 		if err = db.Ping(); err != nil {
 			log.Fatal("Cannot connect to DB: ", err)
 			w.WriteHeader(http.StatusInternalServerError)
+		}
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("OK"))
+	})
+
+	http.HandleFunc("/ready", func(w http.ResponseWriter, r *http.Request) {
+		if nc.Status() == nats.CONNECTED {
+			w.WriteHeader(http.StatusServiceUnavailable)
+			return
 		}
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("OK"))
