@@ -1,29 +1,11 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - manifests/todos/1-project-ns.yaml
-  - manifests/todos/configmap.yaml
-  - manifests/todos/backend-deployment.yaml
-  - manifests/todos/persistentvolumeclaim.yaml
-  - manifests/todos/frontend-deployment.yaml
-  - manifests/todos/backend-service.yaml
-  - manifests/todos/frontend-service.yaml
-  - manifests/todos/pg-configmap.yaml
-  - manifests/todos/postgres-sset.yaml
-  - manifests/todos/postgres-service.yaml
-  - manifests/todos/pg-dump-cronjob.yaml
-  - manifests/todos/project-sa.yaml
-  - manifests/todos/cron-job.yaml
-  - manifests/todos/gateway.yaml
-  - manifests/todos/route.yaml
-  - manifests/todos/hpa-frontend.yaml
-  - manifests/todos/hpa-backend.yaml
-  - manifests/todos/pdb-frontend.yaml
-  - manifests/todos/pdb-backend.yaml
+  - manifests/logging/ingress.yaml
+  - manifests/logging/wr-logs-deployment.yaml
+  - manifests/logging/wr-logs-service.yaml
+  - manifests/logging/argo-cd.yaml
 images:
-  - name: backend-image
-    newName: europe-north1-docker.pkg.dev/dwk-gke-485610/my-repo/todo-backend:46
-  - name: frontend-image
-    newName: europe-north1-docker.pkg.dev/dwk-gke-485610/my-repo/todo-frontend:46
-  - name: broadcast-image
-    newName: europe-north1-docker.pkg.dev/dwk-gke-485610/my-repo/todo-broadcast:46
+  - name: logoutput-image
+    newName: kawpii/logoutput
+    newTag: "47"
