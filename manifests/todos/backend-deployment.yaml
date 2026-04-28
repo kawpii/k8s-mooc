@@ -4,7 +4,7 @@ metadata:
   name: backend-app-dep
   namespace: project
 spec:
-  replicas: 1
+  replicas: 6
   selector:
     matchLabels:
       app: todo-backend-app
