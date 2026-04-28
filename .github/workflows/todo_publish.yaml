@@ -31,7 +31,10 @@ jobs:
         uses: imranismail/setup-kustomize@v2
 
       - name: Use right image
-        run: cd log-output && kustomize edit set image PROJECT/IMAGE=k8s-mooc:$GITHUB_SHA
+        run: |-
+          cd log-output && kustomize edit set image PROJECT/IMAGE=backend-image:$GITHUB_SHA
+          cd ./../todo-frontend && kustomize edit set image PROJECT/IMAGE=frontend-image:$GITHUB_SHA
+          cd ./../todo-broadcaster && kustomize edit set image PROJECT/IMAGE=broadcaster-image:$GITHUB_SHA
 
       - name: commit kustomization.yaml to GitHub
         uses: EndBug/add-and-commit@v9
