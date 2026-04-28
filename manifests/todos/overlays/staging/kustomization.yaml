@@ -1,0 +1,36 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ./../../base
+patches:
+  - path: 1-project-ns.yaml
+  - path: configmap.yaml
+  - path: backend-deployment.yaml
+  - path: persistentvolumeclaim.yaml
+  - path: frontend-deployment.yaml
+  - path: backend-service.yaml
+  - path: frontend-service.yaml
+  - path: pg-configmap.yaml
+  - path: postgres-sset.yaml
+  - path: postgres-service.yaml
+  - path: project-sa.yaml
+  - path: cron-job.yaml
+  - path: gateway.yaml
+  - path: route.yaml
+  - path: hpa-frontend.yaml
+  - path: hpa-backend.yaml
+  - path: pdb-frontend.yaml
+  - path: pdb-backend.yaml
+  - path: argo-cd.yaml
+  
+namePrefix: staging-
+images:
+  - name: backend-image
+    newName: kawpii/todo-backend
+    newTag: "49"
+  - name: frontend-image
+    newName: kawpii/todo-frontend
+    newTag: "49"
+  - name: broadcast-image
+    newName: kawpii/todo-broadcast
+    newTag: "49"

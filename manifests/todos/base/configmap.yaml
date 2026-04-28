@@ -9,3 +9,4 @@ data:
   BACKEND_URL: http://todo-backend-svc:80
   DATABASE_URL: "postgres://john:abc123@postgres-svc:5432/todos?sslmode=disable"
   NATS_URL: nats://nats:4222
+  ENV: 'dev'

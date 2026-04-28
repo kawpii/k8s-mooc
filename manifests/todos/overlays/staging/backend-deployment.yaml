@@ -1,0 +1,7 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-app-dep
+  namespace: staging-project
+spec:
+  replicas: 2

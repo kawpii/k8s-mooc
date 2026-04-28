@@ -1,0 +1,5 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: post-todos-cron
+  namespace: staging-project

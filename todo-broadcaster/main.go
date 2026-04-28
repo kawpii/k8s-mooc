@@ -76,6 +76,10 @@ func main() {
 	})
 
 	http.HandleFunc("/messages", func(w http.ResponseWriter, r *http.Request) {
+		if os.Getenv("ENV") == "staging" {
+			log.Printf("Messages: %+v\n", messages)
+		}
+
 		messagesMu.Lock()
 		defer messagesMu.Unlock()
 

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: gcs-fuse-pv
+  namespace: prod-project
+spec:
+  claimRef:
+    namespace: prod-project
+    name: images-claim
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: prod-project
+  name: images-claim

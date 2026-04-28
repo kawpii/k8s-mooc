@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: gcs-fuse-pv
+  namespace: staging-project
+spec:
+  claimRef:
+    namespace: staging-project
+    name: images-claim
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: staging-project
+  name: images-claim

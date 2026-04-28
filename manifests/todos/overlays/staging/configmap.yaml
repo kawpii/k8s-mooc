@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: staging-project
+  name: todo-configmap
+data:
+  ENV: staging
