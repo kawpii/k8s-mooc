@@ -70,13 +70,20 @@ There is bit of middle ground to reduce ops burden by using a Postgres operator 
 
 ### Chapter 5
 
-- [4.1](https://github.com/kawpiya/k8s-mooc/tree/4.1)
-- [4.2](https://github.com/kawpiya/k8s-mooc/tree/4.2)
-- [4.3](https://github.com/kawpiya/k8s-mooc/tree/4.3)
+- [4.1](https://github.com/kawpii/k8s-mooc/tree/4.1)
+- [4.2](https://github.com/kawpii/k8s-mooc/tree/4.2)
+- [4.3](https://github.com/kawpii/k8s-mooc/tree/4.3)
 ```
 sum(kube_pod_info{created_by_kind="StatefulSet", namespace="prometheus"})
 ```
-- [4.4](https://github.com/kawpiya/k8s-mooc/tree/4.4)
-- [4.5](https://github.com/kawpiya/k8s-mooc/tree/4.5)
+- [4.4](https://github.com/kawpii/k8s-mooc/tree/4.4)
+- [4.5](https://github.com/kawpii/k8s-mooc/tree/4.5)
 
 ### Chapter 6
+
+- [4.6](https://github.com/kawpii/k8s-mooc/tree/4.6)
+- [4.7](https://github.com/kawpii/k8s-mooc/tree/4.7)
+- [4.8](https://github.com/kawpii/k8s-mooc/tree/4.8)
+- [4.9](https://github.com/kawpii/k8s-mooc/tree/4.9)
+- [4.10](https://github.com/kawpii/k8s-mooc/tree/4.10)
+Instead of separate repos, code and config are in separate directories of root directory.

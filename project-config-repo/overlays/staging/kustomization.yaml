@@ -27,10 +27,10 @@ namePrefix: staging-
 images:
   - name: backend-image
     newName: kawpii/todo-backend
-    newTag: "49"
+    newTag: "410"
   - name: frontend-image
     newName: kawpii/todo-frontend
-    newTag: "49"
+    newTag: "410"
   - name: broadcast-image
     newName: kawpii/todo-broadcast
-    newTag: "49"
+    newTag: "410"

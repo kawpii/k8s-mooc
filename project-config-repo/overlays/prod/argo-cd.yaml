@@ -7,9 +7,9 @@ spec:
   project: default
 
   source:
-    repoURL: https://github.com/kawpii/k8s-mooc.git
-    targetRevision: main
-    path: manifests/todos/overlays/staging
+    repoURL: https://github.com/kawpii/k8s-mooc-config.git
+    targetRevision: v4.10
+    path: overlays/prod
 
   destination:
     server: https://kubernetes.default.svc

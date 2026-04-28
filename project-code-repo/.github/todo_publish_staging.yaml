@@ -26,18 +26,3 @@ jobs:
           docker push "kawpii/todo-broadcaster-staging:$GITHUB_SHA"
           docker build --tag "kawpii/todo-broadcaster-staging:$GITHUB_SHA" ./todo-broadcaster
           docker push "kawpii/todo-broadcaster-staging:$GITHUB_SHA"
-
-      - name: Set up Kustomize
-        uses: imranismail/setup-kustomize@v2
-
-      - name: Use right image
-        run: |-
-          cd manifests/todos/staging && kustomize edit set image PROJECT/IMAGE=backend-image:$GITHUB_SHA
-          kustomize edit set image PROJECT/IMAGE=frontend-image:$GITHUB_SHA
-          kustomize edit set image PROJECT/IMAGE=broadcaster-image:$GITHUB_SHA
-
-      - name: commit kustomization.yaml to GitHub
-        uses: EndBug/add-and-commit@v9
-        with:
-          add: 'kustomization.yaml'
-          message: New version released ${{ github.sha }}

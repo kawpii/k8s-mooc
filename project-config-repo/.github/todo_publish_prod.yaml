@@ -1,0 +1,28 @@
+name: Build and publish Todo application
+
+on:
+  push:
+
+jobs:
+  build-publish:
+    name: Build, Push, Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Kustomize
+        uses: imranismail/setup-kustomize@v2
+
+      - name: Use right image
+        run: |-
+          cd ./manifests/todos/prod && kustomize edit set image PROJECT/IMAGE=backend-image:$GITHUB_REF_NAME
+          kustomize edit set image PROJECT/IMAGE=frontend-image:$GITHUB_REF_NAME
+          kustomize edit set image PROJECT/IMAGE=broadcaster-image:$GITHUB_REF_NAME
+
+      - name: commit kustomization.yaml to GitHub
+        uses: EndBug/add-and-commit@v9
+        with:
+          add: 'kustomization.yaml'
+          message: New version released ${{ github.ref_name }}
